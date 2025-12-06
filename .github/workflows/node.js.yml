@@ -28,9 +28,6 @@ jobs:
     - name: Run Snyk Security Plan 
       needs: build
       runs-on: ubuntu-latest
-        permissions:
-          contents: read
-          Security-events:  write
 
       steps:
         name: checkout repo
