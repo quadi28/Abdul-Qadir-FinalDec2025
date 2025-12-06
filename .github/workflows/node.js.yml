@@ -34,14 +34,6 @@ jobs:
       with: 
         # 'test' scans for vulnerabilities and fails the build if issues are found 
         command: test 
-        # Optionally add arguments, e.g., to report results to GitHub Code Scanning 
-        args: --sarif-file-output=snyk.sarif --file=package-lock.json  
- 
-    - name: Upload Snyk scan results to GitHub Code Scanning 
-      if: always() # Ensures this step runs even if the snyk test fails 
-      uses: github/codeql-action/upload-sarif@v3 
-      with: 
-        sarif_file: snyk.sarif
     
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
