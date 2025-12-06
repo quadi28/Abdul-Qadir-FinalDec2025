@@ -25,15 +25,31 @@ jobs:
     - name: Run test script
       run: npm test
 
-    - name: Run Snyk to check for vulnerabilities 
-      # Use the action that corresponds to your project type (e.g., /node@master for Node.js) 
-      uses: snyk/actions/node@master 
-      env: 
-        # Use the secret you created in Step 2 for authentication 
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} 
-      with: 
-        # 'test' scans for vulnerabilities and fails the build if issues are found 
-        command: test 
+    - name: Run Snyk Security Plan 
+      needs: build
+      runs-on: ubuntu-latest
+        permissions:
+          contents: read
+          Security-events:  write
+
+      steps:
+        name: checkout repo
+        uses: actions/checkout@v4
+
+        name: install dependencies
+        uses: npm ci
+
+        name: Run snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} 
+        with:
+          args: --sarif-file-output=snyk-results.sarif
+        
+        name: Upload snyk
+        uses: github/codeql-action/upload-sarif@v3 
+        with:
+           sarif_file: snyk-results.sarif
     
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
